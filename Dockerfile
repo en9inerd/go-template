@@ -1,5 +1,5 @@
 # ---------- Build ----------
-FROM golang:1.25-alpine AS builder
+FROM golang:1.25.7-alpine AS builder
 
 # Install packages with --no-scripts to avoid trigger errors in QEMU emulation
 RUN apk update && apk add --no-cache --no-scripts git ca-certificates
