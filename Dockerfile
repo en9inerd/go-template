@@ -19,16 +19,16 @@ RUN CGO_ENABLED=0 \
     GOOS=${TARGETOS:-linux} \
     GOARCH=${TARGETARCH:-amd64} \
     go build \
+      -gcflags="all=-l -B" \
       -trimpath \
       -ldflags="-s -w -X main.version=${VERSION}" \
       -o /app \
       ./cmd/app
 
 # ---------- Runtime ----------
-FROM alpine:latest
+FROM alpine:3.23
 
-# Install packages
-# Use --no-scripts to skip triggers that fail in QEMU emulation for multi-arch builds
+# Install packages with --no-scripts to avoid trigger errors in QEMU emulation
 RUN apk update && \
     apk add --no-cache --no-scripts \
         ca-certificates \
