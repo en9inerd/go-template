@@ -33,6 +33,9 @@ docker-build:
 docker-up:
 	docker compose up -d
 
+docker-up-build:
+	docker compose up -d --build
+
 docker-down:
 	docker compose down
 
@@ -51,4 +54,4 @@ docker-clean-all: docker-clean
 	@echo "Docker cleanup complete (including build cache)"
 
 .PHONY: all build build-prod clean format test run run-verbose \
-        docker-build docker-up docker-down docker-logs docker-clean docker-clean-all
+        docker-build docker-up docker-up-build docker-down docker-logs docker-clean docker-clean-all

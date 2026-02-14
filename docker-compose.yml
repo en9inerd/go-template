@@ -1,6 +1,10 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-dev}
+    image: ${DOCKERHUB_USERNAME:-youruser}/yourproject:${VERSION:-latest}
     container_name: yourproject
     restart: unless-stopped
     ports:

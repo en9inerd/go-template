@@ -13,6 +13,9 @@ type Config struct {
 	// DatabaseURL string
 	// APIKey      string
 	// Timeout     time.Duration
+
+	// Runtime
+	Verbose bool
 }
 
 // ParseConfig parses command-line flags and environment variables
@@ -43,12 +46,17 @@ func ParseConfig(args []string, getenv func(string) string) (*Config, error) {
 	// databaseURL := fs.String("database-url", getEnv("DATABASE_URL", ""), "Database connection URL")
 	// apiKey := fs.String("api-key", getEnv("API_KEY", ""), "API key")
 
+	// Runtime
+	verbose := fs.Bool("verbose", false, "Enable verbose logging")
+	fs.BoolVar(verbose, "v", false, "Enable verbose logging (shorthand)")
+
 	if err := fs.Parse(args[1:]); err != nil {
 		return nil, err
 	}
 
 	return &Config{
-		Port: *port,
+		Port:    *port,
+		Verbose: *verbose,
 		// Add your application-specific config assignments here
 		// Example:
 		// DatabaseURL: *databaseURL,
