@@ -1,47 +1,24 @@
 package server
 
-import (
-	"log/slog"
-	"net"
-	"net/http"
-	"time"
-)
+import "net/http"
 
-type statusWriter struct {
-	http.ResponseWriter
-	status int
+// SecurityHeaders adds common security headers to every response.
+func SecurityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("Referrer-Policy", "no-referrer")
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' 'unsafe-hashes'")
+		next.ServeHTTP(w, r)
+	})
 }
 
-func (w *statusWriter) WriteHeader(status int) {
-	w.status = status
-	w.ResponseWriter.WriteHeader(status)
-}
-
-// Logger middleware logs HTTP requests
-func Logger(l *slog.Logger) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			sw := &statusWriter{ResponseWriter: w, status: http.StatusOK}
-			start := time.Now()
-
-			next.ServeHTTP(sw, r)
-
-			duration := time.Since(start)
-
-			remoteIP := "-"
-			if r.RemoteAddr != "" {
-				if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil && host != "" {
-					remoteIP = host
-				}
-			}
-
-			l.Info("http request",
-				"method", r.Method,
-				"path", r.URL.Path,
-				"ip", remoteIP,
-				"status", sw.status,
-				"duration", duration,
-			)
-		})
-	}
-}
+// Example: custom middleware skeleton
+//
+//	func MyMiddleware(next http.Handler) http.Handler {
+//		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//			// before handler
+//			next.ServeHTTP(w, r)
+//			// after handler
+//		})
+//	}

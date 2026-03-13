@@ -13,17 +13,6 @@ import (
 	"github.com/yourusername/yourproject/ui"
 )
 
-// SecurityHeaders adds security headers to responses
-func SecurityHeaders(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("X-Frame-Options", "DENY")
-		w.Header().Set("Referrer-Policy", "no-referrer")
-		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' 'unsafe-hashes'")
-		next.ServeHTTP(w, r)
-	})
-}
-
 // NewServer creates and configures a new HTTP server handler
 func NewServer(
 	logger *slog.Logger,
@@ -36,7 +25,7 @@ func NewServer(
 		middleware.RealIP,
 		middleware.Recoverer(logger, false),
 		middleware.GlobalThrottle(1000),
-		middleware.Timeout(60*time.Second),
+		middleware.Timeout(25*time.Second),
 		middleware.Health,
 	)
 
@@ -68,7 +57,7 @@ func registerAPIRoutes(
 	logger *slog.Logger,
 	cfg *config.Config,
 ) {
-	apiGroup.Use(Logger(logger))
+	apiGroup.Use(middleware.Logger(logger))
 	// Add your API routes here
 	// Example:
 	// apiGroup.HandleFunc("GET /health", healthHandler(logger))
@@ -81,7 +70,7 @@ func registerWebRoutes(
 	logger *slog.Logger,
 	cfg *config.Config,
 ) {
-	webGroup.Use(Logger(logger), middleware.StripSlashes)
+	webGroup.Use(middleware.Logger(logger), middleware.StripSlashes)
 	// Add your web routes here
 	// Example:
 	// webGroup.HandleFunc("GET /", homePage(logger, cfg))

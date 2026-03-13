@@ -36,11 +36,12 @@ func run(ctx context.Context, args []string, getenv func(string) string) error {
 	}
 
 	httpServer := &http.Server{
-		Addr:         ":" + cfg.Port,
-		Handler:      handler,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		Addr:              ":" + cfg.Port,
+		Handler:           handler,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
 	}
 
 	var wg sync.WaitGroup
@@ -73,4 +74,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-
