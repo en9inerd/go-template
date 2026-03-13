@@ -256,4 +256,4 @@ Before you start building, here's a checklist of things to customize:
 
 ## License
 
-This template is provided as-is. Feel free to customize it for your needs.
+MIT
