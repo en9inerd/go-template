@@ -21,7 +21,12 @@ func NewServer(
 	r := router.New(http.NewServeMux())
 
 	r.Use(
-		SecurityHeaders,
+		middleware.Headers(
+			"X-Content-Type-Options: nosniff",
+			"X-Frame-Options: DENY",
+			"Referrer-Policy: no-referrer",
+			"Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' 'unsafe-hashes'",
+		),
 		middleware.RealIP,
 		middleware.Recoverer(logger, false),
 		middleware.GlobalThrottle(1000),
