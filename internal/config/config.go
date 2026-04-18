@@ -1,7 +1,7 @@
 package config
 
 import (
-	"flag"
+	"github.com/en9inerd/go-pkgs/flagpair"
 	// "strconv" // Uncomment when using getEnvInt
 )
 
@@ -38,19 +38,18 @@ func ParseConfig(args []string, getenv func(string) string) (*Config, error) {
 	// 	return fallback
 	// }
 
-	fs := flag.NewFlagSet("app", flag.ContinueOnError)
+	r := flagpair.New("app")
 
-	port := fs.String("port", getEnv("APP_PORT", "8000"), "Port to listen on")
-	// Add your application-specific flags here
+	port := r.String("port", "p", getEnv("APP_PORT", "8000"), "Port to listen on")
+	// Add your application-specific flags here (long, short, default, usage)
 	// Example:
-	// databaseURL := fs.String("database-url", getEnv("DATABASE_URL", ""), "Database connection URL")
-	// apiKey := fs.String("api-key", getEnv("API_KEY", ""), "API key")
+	// databaseURL := r.String("database-url", "", getEnv("DATABASE_URL", ""), "Database connection URL")
+	// apiKey := r.String("api-key", "", getEnv("API_KEY", ""), "API key")
 
 	// Runtime
-	verbose := fs.Bool("verbose", false, "Enable verbose logging")
-	fs.BoolVar(verbose, "v", false, "Enable verbose logging (shorthand)")
+	verbose := r.Bool("verbose", "v", false, "Enable verbose logging")
 
-	if err := fs.Parse(args[1:]); err != nil {
+	if err := r.Parse(args[1:]); err != nil {
 		return nil, err
 	}
 

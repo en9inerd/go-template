@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -102,6 +103,9 @@ func run(ctx context.Context, args []string, getenv func(string) string) error {
 func main() {
 	ctx := context.Background()
 	if err := run(ctx, os.Args, os.Getenv); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return
+		}
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
